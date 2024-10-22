@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Calorie Tracker | Monitor Your Daily Intake</title>
+
+  </head>
+  <body class="bg-[#ccc5b9] min-h-screen">
+    <div class="container mx-auto px-4 py-20">
+      <div class="max-w-2xl mx-auto bg-[#fffcf2] p-8 rounded-lg shadow-2xl">
+        <h1 class="text-4xl font-extrabold mb-8 text-center text-gray-700 tracking-tight">
+          Calorie <span class="text-blue-700">Tracker</span>
+        </h1>
+
+        <form method="POST" class="mb-8">
+          {% csrf_token %}
+          <div class="flex flex-col md:flex-row gap-4 mb-4 ">
+            <input
+              type="text"
+              name="food_name"
+              placeholder="Food Name"
+              class="capitalize flex-1 border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              required
+            />
+            <input
+              type="number"
+              name="calorie_count"
+              placeholder="Calories"
+              class="flex-1 border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none "
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            name="add"
+            class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-800 focus:ring-opacity-50"
+          >
+            Add Food
+          </button>
+        </form>
+
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold mb-3 text-gray-700">Food Items</h2>
+          <ul class="space-y-2">
+            {% for food, calories in food_items.items %}
+            <li class="flex justify-between items-center bg-[#eae2b7] p-3 rounded-md">
+              <span class="text-gray-800">{{ food }}: <span class="font-medium">{{ calories }} calories</span></span>
+              <form method="POST" class="inline">
+                {% csrf_token %}
+                <input type="hidden" name="food_name" value="{{ food }}" />
+                <button type="submit" name="remove" class="text-red-700 hover:text-red-800 transition duration-300 ease-in-out hover:scale-105">
+                  Remove
+                </button>
+              </form>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mt-8 pt-6 border-t border-gray-200">
+          <h3 class="text-2xl font-bold text-gray-800">
+            Total Calories: <span class="text-blue-600">{{ total_calories }}</span>
+          </h3>
+          <form method="POST">
+            {% csrf_token %}
+            <button
+              type="submit"
+              name="reset"
+              class="w-full sm:w-auto bg-red-700 text-white px-6 py-2 rounded-md hover:bg-red-800 hover:scale-105 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
+            >
+              Reset Tracker
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
