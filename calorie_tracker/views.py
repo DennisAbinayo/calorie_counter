@@ -1,26 +1,30 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from .models import FoodItem
+from django.db.models import Sum
+
 
 # Create your views here.
-food_items = {}
-total_calories = 0
 
-def base(request):
-    global food_items, total_calories
-    
+def index(request):
     if request.method == 'POST':
         if 'add' in request.POST:
-            food_name = request.POST.get('food_name').strip().title()
-            calorie_count = int(request.POST.get('calorie_count'))
-            if food_name and calorie_count >= 0:
-                food_items[food_name] = calorie_count
-                total_calories += calorie_count
+            name = request.POST.get('food_name').strip().title()
+            calories = int(request.POST.get('calorie_count'))
+            FoodItem.objects.create(name=name, calories=calories)
         elif 'remove' in request.POST:
             food_name = request.POST.get('food_name').strip()
-            if food_name in food_items:
-                total_calories -= food_items[food_name]
-                del food_items[food_name]
+            FoodItem.objects.filter(name=food_name).delete()
         elif 'reset' in request.POST:
-            total_calories = 0
-            food_items.clear()
+            FoodItem.objects.all().delete()
+        return redirect('index')
+
+
+
+    foods = FoodItem.objects.all()
+    total_calories = foods.aggregate(Sum('calories'))['calories__sum'] or 0
+    context = {
+        'food_items': {food.name: food.calories for food in foods},
+        'total_calories': total_calories,
+    }
     
-    return render(request, 'tracker/index.html', {'food_items': food_items, 'total_calories': total_calories})
+    return render(request, "tracker/index.html", context)
