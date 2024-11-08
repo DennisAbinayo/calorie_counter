@@ -17,3 +17,4 @@ class FoodItem(models.Model):
     
     class Meta:
         ordering = ['-date_posted']
+        verbose_name_plural = "Food Items"

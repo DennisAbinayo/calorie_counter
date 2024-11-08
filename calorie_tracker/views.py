@@ -21,9 +21,10 @@ def index(request):
 
 
     foods = FoodItem.objects.all()
-    total_calories = foods.aggregate(Sum('calories'))['calories__sum'] or 0
+    print(foods)
+    total_calories = foods.aggregate(Sum('calories'))['calories__sum'] or 0  # aggregate returns dictionary with key 'calories__sum' e.g. {'calories__sum': 1000}
     context = {
-        'food_items': {food.name: food.calories for food in foods},
+        'food_items': {food.name: food.calories for food in foods}, # dictionary comprehension, creates a dictionary with food name as key and calories as value
         'total_calories': total_calories,
     }
     
